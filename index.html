@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>youclub.com</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            background: #0b0b1a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ========== Particles ========== */
+        #particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ========== Navbar ========== */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 18px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            transition: background 0.4s, backdrop-filter 0.4s;
+        }
+        .navbar.scrolled {
+            background: rgba(11,11,26,0.85);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 2px 40px rgba(120,80,255,0.1);
+        }
+        .nav-logo {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #a78bfa, #6366f1, #a78bfa);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+            letter-spacing: 1px;
+        }
+        .nav-links a:hover { color: #a78bfa; }
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+        .nav-toggle span {
+            width: 26px; height: 2px;
+            background: #fff; border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        /* ========== Hero ========== */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 24px;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 22px;
+            border: 1px solid rgba(167,139,250,0.25);
+            border-radius: 50px;
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: #a78bfa;
+            background: rgba(167,139,250,0.06);
+            margin-bottom: 28px;
+            animation: fadeDown 0.8s ease-out;
+        }
+        .hero h1 {
+            font-size: clamp(56px, 12vw, 140px);
+            font-weight: 900;
+            background: linear-gradient(135deg, #a78bfa 0%, #6366f1 30%, #c084fc 60%, #a78bfa 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 5s ease-in-out infinite, fadeUp 1s ease-out 0.15s both;
+            line-height: 1.05;
+            letter-spacing: 4px;
+        }
+        .hero .subtitle {
+            font-size: clamp(18px, 2.8vw, 38px);
+            font-weight: 300;
+            color: rgba(255,255,255,0.7);
+            margin-top: 18px;
+            letter-spacing: 8px;
+            animation: fadeUp 1s ease-out 0.35s both;
+        }
+        .hero .desc {
+            max-width: 600px;
+            margin-top: 22px;
+            font-size: 16px;
+            line-height: 1.9;
+            color: rgba(255,255,255,0.45);
+            animation: fadeUp 1s ease-out 0.55s both;
+        }
+        .hero-actions {
+            margin-top: 38px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeUp 1s ease-out 0.75s both;
+        }
+        .btn {
+            padding: 14px 42px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover { transform: translateY(-3px); }
+        .btn-primary {
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(99,102,241,0.35);
+        }
+        .btn-primary:hover { box-shadow: 0 12px 45px rgba(99,102,241,0.5); }
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-outline:hover {
+            border-color: #a78bfa;
+            color: #a78bfa;
+            box-shadow: 0 8px 30px rgba(167,139,250,0.12);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 36px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.25);
+            font-size: 11px;
+            letter-spacing: 2px;
+            animation: bounce 2s infinite;
+        }
+        .scroll-indicator .mouse {
+            width: 22px; height: 36px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            position: relative;
+        }
+        .scroll-indicator .mouse::after {
+            content: '';
+            position: absolute;
+            top: 6px; left: 50%;
+            transform: translateX(-50%);
+            width: 3px; height: 8px;
+            background: #a78bfa;
+            border-radius: 2px;
+            animation: scrollDot 2s infinite;
+        }
+
+        /* ========== Section common ========== */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .section-header .label {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: #a78bfa;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .section-header h2 {
+            font-size: clamp(30px, 4vw, 44px);
+            font-weight: 800;
+        }
+        .section-header p {
+            color: rgba(255,255,255,0.45);
+            font-size: 15px;
+            max-width: 500px;
+            margin: 14px auto 0;
+            line-height: 1.7;
+        }
+
+        /* ========== About / Stats ========== */
+        .about-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        .about-text h3 {
+            font-size: 28px; font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .about-text h3 span { color: #a78bfa; }
+        .about-text p {
+            color: rgba(255,255,255,0.55);
+            line-height: 1.9;
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+        .about-text .highlight {
+            background: rgba(167,139,250,0.08);
+            border-left: 3px solid #a78bfa;
+            padding: 14px 20px;
+            border-radius: 0 10px 10px 0;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            line-height: 1.8;
+            margin-top: 18px;
+        }
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 16px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 28px 18px;
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .stat-card:hover {
+            border-color: rgba(167,139,250,0.3);
+            transform: translateY(-4px);
+        }
+        .stat-card .number {
+            font-size: 36px; font-weight: 900;
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .label {
+            font-size: 12px; color: rgba(255,255,255,0.45);
+            margin-top: 4px; letter-spacing: 1px;
+        }
+
+        /* ========== Top Players ========== */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px;
+            padding: 32px 22px;
+            text-align: center;
+            transition: border-color 0.4s, transform 0.4s, box-shadow 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+            transform: scaleX(0);
+            transition: transform 0.5s;
+        }
+        .player-card:hover::before { transform: scaleX(1); }
+        .player-card:hover {
+            border-color: rgba(167,139,250,0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+        }
+        .player-card .avatar {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 30px rgba(99,102,241,0.25);
+        }
+        .player-card .role {
+            display: inline-block;
+            padding: 3px 14px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .player-card .role.top { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .player-card .role.jungle { background: rgba(168,85,247,0.15); color: #a855f7; }
+        .player-card .role.mid { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .player-card .role.adc { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .player-card .role.support { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .player-card .role.entertain { background: rgba(244,114,182,0.15); color: #f472b6; }
+        .player-card .role.manager { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .player-card .name {
+            font-size: 20px; font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .player-card .tagline {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* ========== Features ========== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 22px;
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px;
+            padding: 36px 28px;
+            transition: border-color 0.4s, transform 0.4s;
+        }
+        .feature-card:hover {
+            border-color: rgba(167,139,250,0.2);
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 18px;
+            background: rgba(167,139,250,0.08);
+        }
+        .feature-card h3 {
+            font-size: 18px; font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            color: rgba(255,255,255,0.45);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* ========== Gallery / Image Cards ========== */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+        }
+        .gallery-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: border-color 0.4s, transform 0.4s, box-shadow 0.4s;
+        }
+        .gallery-card:hover {
+            border-color: rgba(167,139,250,0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+        }
+        .gallery-card .img-wrap {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+            background: #0b0b1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-card .img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.5s;
+            cursor: zoom-in;
+        }
+        .gallery-card:hover .img-wrap img {
+            transform: scale(1.05);
+        }
+        .gallery-card .card-body {
+            padding: 18px 22px 22px;
+        }
+        .gallery-card .card-body h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .gallery-card .card-body p {
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+        }
+
+        /* ========== CTA ========== */
+        .cta-section {
+            text-align: center;
+            padding: 120px 60px;
+            max-width: 750px;
+        }
+        .cta-section h2 {
+            font-size: clamp(26px, 3.6vw, 40px);
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+        .cta-section p {
+            color: rgba(255,255,255,0.45);
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .cta-wechat {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(167,139,250,0.08);
+            border: 1px dashed rgba(167,139,250,0.3);
+            border-radius: 14px;
+            padding: 18px 36px;
+            margin-top: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #a78bfa;
+            letter-spacing: 2px;
+            transition: background 0.3s, border-color 0.3s;
+            cursor: pointer;
+        }
+        .cta-wechat:hover {
+            background: rgba(167,139,250,0.14);
+            border-color: rgba(167,139,250,0.5);
+        }
+        .cta-wechat .icon {
+            font-size: 28px;
+        }
+
+        /* ========== Footer ========== */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 36px 20px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.2);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* ========== Animations ========== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(8px); }
+        }
+        @keyframes scrollDot {
+            0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(16px); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ========== Lightbox ========== */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            cursor: zoom-out;
+        }
+        .lightbox-overlay.active { display: flex; }
+        .lightbox-overlay img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+        }
+        .lightbox-overlay .close-btn {
+            position: absolute;
+            top: 24px; right: 32px;
+            font-size: 36px;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+        .lightbox-overlay .close-btn:hover { color: #fff; }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .navbar { padding: 14px 24px; }
+            .nav-links {
+                display: none;
+                position: absolute; top: 100%; left: 0; width: 100%;
+                flex-direction: column;
+                background: rgba(11,11,26,0.96);
+                backdrop-filter: blur(12px);
+                padding: 20px 30px;
+                gap: 18px;
+            }
+            .nav-links.open { display: flex; }
+            .nav-toggle { display: flex; }
+            section { padding: 60px 24px; }
+            .about-wrap { grid-template-columns: 1fr; gap: 36px; }
+            .cta-section { padding: 80px 24px; }
+            .gallery { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .about-stats { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 44px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Particles ===== -->
+    <canvas id="particles"></canvas>
+
+    <!-- ===== Navbar ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-logo">✦ YOU俱乐部</div>
+        <button class="nav-toggle" id="navToggle" aria-label="菜单">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about">关于</a></li>
+            <li><a href="#players">大神阵容</a></li>
+            <li><a href="#features">服务</a></li>
+            <li><a href="#gallery">活动价格</a></li>
+            <li><a href="#join">点单</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+        <div class="hero-badge">✦ 顶尖陪玩 · 用心服务</div>
+        <h1>YOU俱乐部</h1>
+        <p class="subtitle">有我陪玩 · 不止于玩</p>
+        <p class="desc">
+            50+ 优质陪玩大神在线接单 — 上分、娱乐、陪伴，<br>
+            你想要的，我们都有。
+        </p>
+        <div class="hero-actions">
+            <a href="#join" class="btn btn-primary">💜 立即点单</a>
+            <a href="#players" class="btn btn-outline">查看大神阵容</a>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+            <span>向下滚动</span>
+        </div>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section id="about">
+        <div class="about-wrap">
+            <div class="about-text reveal">
+                <div class="section-header" style="text-align:left; margin-bottom:20px;">
+                    <div class="label">关于我们</div>
+                    <h2>YOU 俱乐部<br><span>与你同行，荣耀相伴</span></h2>
+                </div>
+                <p>
+                    YOU 俱乐部成立于 2024 年，汇集了 50+ 位来自全国各地的高水平陪玩师。
+                    我们以专业的技术、热情的态度和贴心的服务，为每一位板板带来最好的游戏体验。
+                </p>
+                <p>
+                    无论是冲击王者段位、练习新英雄，还是单纯想找人一起开心玩几局，
+                    在这里都能找到最适合你的那个搭档。
+                </p>
+                <div class="highlight">
+                    💜 已有超过 3000 位板板选择 YOU 俱乐部，好评率 98% 以上
+                </div>
+            </div>
+            <div class="about-stats reveal">
+                <div class="stat-card">
+                    <div class="number">50+</div>
+                    <div class="label">优质陪玩师</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">3000+</div>
+                    <div class="label">服务订单</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">98%</div>
+                    <div class="label">好评率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">24h</div>
+                    <div class="label">全天候在线</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Top Players ===== -->
+    <section id="players">
+        <div class="section-header reveal">
+            <div class="label">大神阵容</div>
+            <h2>顶尖大神，任你挑选</h2>
+            <p>每一位都是经过严格筛选的实力派，带你躺赢带你飞</p>
+        </div>
+
+        <div class="players-grid">
+
+            <!-- 顶尖中路 林泽 -->
+            <div class="player-card reveal">
+                <div class="avatar">泽</div>
+                <div class="role mid">✦ 顶尖中路</div>
+                <div class="name">林泽</div>
+                <div class="tagline">中路杀神 · 法刺天花板</div>
+            </div>
+
+            <!-- 顶尖射手 四年 -->
+            <div class="player-card reveal">
+                <div class="avatar">四</div>
+                <div class="role adc">✦ 顶尖射手</div>
+                <div class="name">四年</div>
+                <div class="tagline">发育路魔王 · 输出机器</div>
+            </div>
+
+            <!-- 顶尖射手 这也 -->
+            <div class="player-card reveal">
+                <div class="avatar">也</div>
+                <div class="role adc">✦ 顶尖射手</div>
+                <div class="name">这也</div>
+                <div class="tagline">百穿神射 · 团战收割机</div>
+            </div>
+
+            <!-- 顶尖打野 7k -->
+            <div class="player-card reveal">
+                <div class="avatar">7</div>
+                <div class="role jungle">✦ 顶尖打野</div>
+                <div class="name">7k</div>
+                <div class="tagline">野区统治者 · 节奏发动机</div>
+            </div>
+
+            <!-- 顶尖对抗 糯米 -->
+            <div class="player-card reveal">
+                <div class="avatar">糯</div>
+                <div class="role top">✦ 顶尖对抗</div>
+                <div class="name">糯米</div>
+                <div class="tagline">对抗路霸主 · 单杀王</div>
+            </div>
+
+            <!-- 娱乐陪陪 忆玖 -->
+            <div class="player-card reveal">
+                <div class="avatar">玖</div>
+                <div class="role entertain">✦ 娱乐陪陪</div>
+                <div class="name">忆玖</div>
+                <div class="tagline">声控暖男 · 快乐游戏</div>
+            </div>
+
+            <!-- 娱乐陪陪 陈深 -->
+            <div class="player-card reveal">
+                <div class="avatar">深</div>
+                <div class="role entertain">✦ 娱乐陪陪</div>
+                <div class="name">陈深</div>
+                <div class="tagline">风趣幽默 · 最佳拍档</div>
+            </div>
+
+            <!-- 团长 饭饭 -->
+            <div class="player-card reveal">
+                <div class="avatar">饭</div>
+                <div class="role manager">👑 团长</div>
+                <div class="name">饭饭</div>
+                <div class="tagline">集所有优点于一身 · 全能天花板</div>
+            </div>
+
+            <!-- 管理 桉柠 -->
+            <div class="player-card reveal">
+                <div class="avatar">柠</div>
+                <div class="role manager">✦ 管理</div>
+                <div class="name">桉柠</div>
+                <div class="tagline">人美声甜 · 贴心管理</div>
+            </div>
+
+            <!-- 管理 阿絮 -->
+            <div class="player-card reveal">
+                <div class="avatar">絮</div>
+                <div class="role manager">✦ 管理</div>
+                <div class="name">阿絮</div>
+                <div class="tagline">细心认真 · 靠谱担当</div>
+            </div>
+
+            <!-- 管理 阿狸 -->
+            <div class="player-card reveal">
+                <div class="avatar">狸</div>
+                <div class="role manager">✦ 管理</div>
+                <div class="name">阿狸</div>
+                <div class="tagline">温柔体贴 · 如沐春风</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===== Features ===== -->
+    <section id="features">
+        <div class="section-header reveal">
+            <div class="label">我们的服务</div>
+            <h2>为什么选择 YOU 俱乐部？</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">🎯</div>
+                <h3>专业上分</h3>
+                <p>顶尖大神带队，合理战术配合，轻松突破瓶颈，上分如喝水。</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🎤</div>
+                <h3>语音陪伴</h3>
+                <p>开麦聊天、指挥带节奏，声音好听又有趣，让每一局都不再无聊。</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">⏱️</div>
+                <h3>极速响应</h3>
+                <p>24 小时在线接单，随叫随到，告别漫长的匹配等待。</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">💎</div>
+                <h3>品质保障</h3>
+                <p>每位陪玩师都经过严格考核，不满意可随时更换，服务到底。</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🎭</div>
+                <h3>自由定制</h3>
+                <p>上分、娱乐、教学、情怀局……你想要的方式，我们都能满足。</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🤝</div>
+                <h3>专属客服</h3>
+                <p>一对一贴心服务，了解你的需求，推荐最合适的大神与你配对。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Gallery ===== -->
+    <section id="gallery">
+        <div class="section-header reveal">
+            <div class="label">活动与价格</div>
+            <h2>超值套餐，限时活动</h2>
+            <p>点击图片可放大查看详情</p>
+        </div>
+        <div class="gallery">
+            <div class="gallery-card reveal">
+                <div class="img-wrap">
+                    <img src="dragonboat.jpg" alt="端午活动" onclick="openLightbox(this.src)">
+                </div>
+                <div class="card-body">
+                    <h3>🐉 端午特惠活动</h3>
+                    <p>限时福利，优惠多多，不容错过</p>
+                </div>
+            </div>
+            <div class="gallery-card reveal">
+                <div class="img-wrap">
+                    <img src="price.jpg" alt="价格表" onclick="openLightbox(this.src)">
+                </div>
+                <div class="card-body">
+                    <h3>💰 陪玩价格表</h3>
+                    <p>透明定价，多种套餐任选</p>
+                </div>
+            </div>
+            <div class="gallery-card reveal">
+                <div class="img-wrap">
+                    <img src="deposit.jpg" alt="常规预存表" onclick="openLightbox(this.src)">
+                </div>
+                <div class="card-body">
+                    <h3>📦 常规预存套餐</h3>
+                    <p>预存更优惠，长期合作首选</p>
+                </div>
+            </div>
+            <div class="gallery-card reveal">
+                <div class="img-wrap">
+                    <img src="moon-star.jpg" alt="月星礼" onclick="openLightbox(this.src)">
+                </div>
+                <div class="card-body">
+                    <h3>🌙 月星礼</h3>
+                    <p>月度专属礼遇，每月都有新惊喜</p>
+                </div>
+            </div>
+            <div class="gallery-card reveal">
+                <div class="img-wrap">
+                    <img src="regular-gift.jpg" alt="常规礼" onclick="openLightbox(this.src)">
+                </div>
+                <div class="card-body">
+                    <h3>🎁 常规礼</h3>
+                    <p>日常福利回馈，常玩常新</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section id="join" class="cta-section">
+        <div class="reveal">
+            <h2>💜 想找人一起打游戏？</h2>
+            <p>
+                不管是想上分冲段，还是想找人聊聊天开心玩几局，<br>
+                YOU 俱乐部 50+ 位陪玩大神总有一位适合你。
+            </p>
+            <p style="color:rgba(255,255,255,0.3); font-size:13px;">
+                添加微信，专属客服为你推荐最合拍的大神
+            </p>
+            <div class="cta-wechat" onclick="copyWechat()">
+                <span class="icon">💬</span>
+                <span>x-13579-zy</span>
+                <span style="font-size:12px; font-weight:400; color:rgba(167,139,250,0.5);">点击复制</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Lightbox ===== -->
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+        <button class="close-btn" onclick="closeLightbox()">✕</button>
+        <img id="lightbox-img" src="" alt="">
+    </div>
+
+    <!-- ===== Footer ===== -->
+    <footer>
+        © 2025 YOU俱乐部 · 用心陪伴，不止于玩
+    </footer>
+
+    <!-- ===== JavaScript ===== -->
+    <script>
+        // ---- Particles ----
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.25;
+                this.speedY = (Math.random() - 0.5) * 0.25;
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity += (Math.random() - 0.5) * 0.005;
+                this.opacity = Math.max(0.05, Math.min(0.5, this.opacity));
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(167, 139, 250, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 90; i++) particles.push(new Particle());
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i+1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 130) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(167, 139, 250, ${0.05 * (1 - dist/130)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            drawConnections();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ---- Navbar scroll ----
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
+
+        // ---- Mobile toggle ----
+        const toggleBtn = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+        toggleBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+        navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => navLinks.classList.remove('open')));
+
+        // ---- Scroll reveal ----
+        const revealEls = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        revealEls.forEach(el => observer.observe(el));
+
+        // ---- Smooth scroll ----
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            });
+        });
+
+        // ---- Copy WeChat ----
+        function copyWechat() {
+            const text = 'x-13579-zy';
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.cta-wechat');
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<span style="font-size:20px;">✅</span> 已复制微信号';
+                setTimeout(() => btn.innerHTML = orig, 2000);
+            }).catch(() => {
+                alert('微信号: x-13579-zy');
+            });
+        }
+
+        // ---- Lightbox ----
+        function openLightbox(src) {
+            const lb = document.getElementById('lightbox');
+            document.getElementById('lightbox-img').src = src;
+            lb.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            lb.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+</body>
+</html>
